@@ -16,7 +16,6 @@ model User {
   name           String
   dept           String
   email          String    @unique
-  password       String
   hashedPassword String
   isAdmin        Boolean   @default(false)
   git            String?
@@ -29,11 +28,11 @@ model User {
 
 model Project {
   id          Int       @id @default(autoincrement())
-  title       String
+  title       String    @unique
   domain      String
   techStack   String
   description String
-  gitl        String
+  gitl        String    @unique
   User        User      @relation(name: "UserProjects", fields: [userId], references: [id])
   members     User[]    @relation(name: "ProjectMembers")
   userId      Int

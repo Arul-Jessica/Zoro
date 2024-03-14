@@ -6,7 +6,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-export const postRouter = createTRPCRouter({
+export const userRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
     .query(({ input }) => {
@@ -48,14 +48,13 @@ export const postRouter = createTRPCRouter({
           hashedPassword: password,
         },
       });
-      // return ctx.db.user.create({
-      //   data: {
-      //     name: input.name,
-      //     regno: input.regno,
-      //     dept: input.dept,
-      //     email: input.email,
-      //     hashedpassword: password,
-      //   },
-      // });
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      };
     }),
 });
