@@ -1,5 +1,5 @@
 import { z } from "zod";
-import argon2 from "argon2";
+
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -14,12 +14,12 @@ export const projectRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         title: z.string().min(1),
         domain: z.string().min(1),
-        techStack: z.string().min(1),
+        techStacks: z.array(z.number()),
         description: z.string().min(1),
         gitl: z.string().min(1).url(),
       }),
@@ -53,18 +53,113 @@ export const projectRouter = createTRPCRouter({
           domain: input.domain,
           description: input.description,
           gitl: input.gitl,
+          User: {
+            connect: {
+              id: Number(ctx.session.user.id),
+            },
+          },
+          TechStacks: {
+            connect: input.techStacks.map((id) => ({ id })),
+          },
         },
       });
       return {
         success: true,
-        project: {
-          id: project.id,
-          title: project.title,
-          domain: project.domain,
-          techStack: project.techStack,
-          description: project.description,
-          gitl: project.gitl,
+        message: "Project created successfully",
+      };
+    }),
+  edit: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1),
+        domain: z.string().min(1),
+        techStacks: z.array(z.number()),
+        description: z.string().min(1),
+        gitl: z.string().min(1).url(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      let project = await ctx.db.project.findUnique({
+        where: {
+          id: input.id,
         },
+      });
+      if (!project) {
+        return {
+          success: false,
+          message: "Project not found",
+        };
+      }
+      project = await ctx.db.project.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          title: input.title,
+          domain: input.domain,
+          description: input.description,
+          gitl: input.gitl,
+          User: {
+            connect: {
+              id: Number(ctx.session.user.id),
+            },
+          },
+          TechStacks: {
+            set: input.techStacks.map((id) => ({ id })),
+          },
+        },
+      });
+      return {
+        success: true,
+        message: "Project updated successfully",
+      };
+    }),
+  delete: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      let project = await ctx.db.project.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+      if (!project) {
+        return {
+          success: false,
+          message: "Project not found",
+        };
+      }
+      await ctx.db.project.delete({
+        where: {
+          id: input.id,
+        },
+      });
+      return {
+        success: true,
+        message: "Project deleted successfully",
+      };
+    }),
+  get: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      let project = await ctx.db.project.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          TechStacks: true,
+          User: true,
+        },
+      });
+      if (!project) {
+        return {
+          success: false,
+          message: "Project not found",
+        };
+      }
+      return {
+        success: true,
+        project,
       };
     }),
 });

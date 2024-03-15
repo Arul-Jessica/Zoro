@@ -1,10 +1,6 @@
 import { z } from "zod";
 import argon2 from "argon2";
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
   hello: publicProcedure

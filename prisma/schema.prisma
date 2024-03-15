@@ -24,24 +24,27 @@ model User {
   projects       Project[] @relation("UserProjects")
   memberProjects Project[] @relation("ProjectMembers")
   Request        Request[]
+ 
 }
 
 model Project {
-  id          Int       @id @default(autoincrement())
-  title       String    @unique
+  id          Int         @id @default(autoincrement())
+  title       String      @unique
   domain      String
-  techStack   String
+  TechStacks  TechStack[]
   description String
-  gitl        String    @unique
-  User        User      @relation(name: "UserProjects", fields: [userId], references: [id])
-  members     User[]    @relation(name: "ProjectMembers")
+  gitl        String      @unique
+  User        User        @relation(name: "UserProjects", fields: [userId], references: [id])
+  members     User[]      @relation(name: "ProjectMembers")
   userId      Int
   Request     Request[]
 }
 
 model TechStack {
-  id   Int    @id @default(autoincrement())
-  name String
+  id        Int      @id @default(autoincrement())
+  name      String
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId Int?
 }
 
 model Request {
@@ -51,3 +54,4 @@ model Request {
   projectId Int
   userId    Int
 }
+
