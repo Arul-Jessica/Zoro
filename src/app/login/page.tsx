@@ -11,9 +11,7 @@ export default function Login() {
   const error = useSearchParams()?.get("error");
   const router = useRouter();
 
-  type Errors = {
-    [key: string]: string;
-  };
+  type Errors = Record<string, string>;
 
   const errors: Errors = {
     Signin: "Try signing with a different account.",
@@ -42,16 +40,16 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const result = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
-
-    if (result && result.error) {
-      toast.error(errors[result.error] ?? "Something went wrong");
-    } else {
-      router.push("../collaboration/post");
+    try {
+      await signIn("credentials", {
+        email: email,
+        password: password,
+        callbackUrl: "/dashboard",
+      });
+      toast.success("Login successful!");
+      router.push("/dashboard");
+    } catch (error) {
+      toast.error("Failed to login");
     }
   };
   return (
