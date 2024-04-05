@@ -23,16 +23,14 @@ declare module "next-auth" {
     user: {
       id: string;
       isAdmin: boolean;
-
     } & DefaultSession["user"];
   }
 
   interface User {
-    id : string;
+    id: string;
     name: string;
     email: string;
     isAdmin: boolean;
-
   }
 }
 export const authOptions: NextAuthOptions = {
@@ -63,10 +61,10 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  adapter: PrismaAdapter(db),
-  session: {
-    strategy: "jwt",
-  },
+  // adapter: PrismaAdapter(db),
+  // session: {
+  //   strategy: "jwt",
+  // },
   providers: [
     Credentials({
       name: "Credentials",
@@ -105,3 +103,4 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 };
+export const getServerAuthSession = () => getServerSession(authOptions);

@@ -3,8 +3,10 @@ import { api } from "~/trpc/react";
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
+import { useSession } from "next-auth/react";
 function PostNewProject() {
+  const session = useSession();
+  console.log(session);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [gitl, setGit] = useState("");
