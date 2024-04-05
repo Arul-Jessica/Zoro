@@ -1,13 +1,41 @@
 import { z } from "zod";
 import argon2 from "argon2";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import Login from "~/app/login/page";
 
 export const userRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
+  Login: publicProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        password: z.string().min(8).max(22),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          email: input.email,
+        },
+      });
+      if (!user) {
+        return {
+          success: false,
+          message: "User not found",
+        };
+      }
+      if (!(await argon2.verify(user.hashedPassword, input.password))) {
+        return {
+          success: false,
+          message: "Invalid password",
+        };
+      }
       return {
-        greeting: `Hello ${input.text}`,
+        success: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
       };
     }),
 

@@ -19,7 +19,7 @@ export const projectRouter = createTRPCRouter({
       z.object({
         title: z.string().min(1),
         domain: z.string().min(1),
-        techStacks: z.array(z.number()),
+        techStacks: z.array(z.string()),
         description: z.string().min(1),
         gitl: z.string().min(1).url(),
       }),
@@ -59,7 +59,7 @@ export const projectRouter = createTRPCRouter({
             },
           },
           TechStacks: {
-            connect: input.techStacks.map((id) => ({ id })),
+            create: input.techStacks.map((name) => ({ name })),
           },
         },
       });

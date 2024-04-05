@@ -42,19 +42,18 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      await signIn("credentials", {
-        email: email,
-        password: password,
-        callbackUrl: "/",
-      });
-      toast.success("Login successful!");
-      router.push("/");
-    } catch (error) {
-      toast.error("Failed to login");
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (result && result.error) {
+      toast.error(errors[result.error] ?? "Something went wrong");
+    } else {
+      router.push("../collaboration/post");
     }
   };
-
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-sm rounded-md bg-white p-6 shadow-md">
