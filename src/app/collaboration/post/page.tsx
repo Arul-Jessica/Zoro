@@ -9,11 +9,14 @@ function PostNewProject() {
   console.log(session);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedTechStacks, setSelectedTechStacks] = useState<number[]>([]);
   const [gitl, setGit] = useState("");
   const [domain, setDomain] = useState("");
   const [techStacks, setTechStacks] = useState([""]);
   const projectMutation = api.project.create.useMutation();
   const router = useRouter();
+  const getTechStacks = api.techstack.list.useQuery();
+  console.log(getTechStacks);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,7 +27,7 @@ function PostNewProject() {
       description,
       gitl,
       domain,
-      techStacks,
+      techStacks: selectedTechStacks,
     });
     if (project.success) {
       toast.success("Project posted successfully.");
@@ -96,16 +99,26 @@ function PostNewProject() {
           </label>
           <label htmlFor="techStacks" className="block">
             <span className="text-gray-700">Tech Stacks</span>
-            <input
-              type="techStacks"
+            <select
               id="techStacks"
-              value={techStacks}
-              onChange={(e) => setTechStacks([e.target.value])}
+              onChange={(e) =>
+                setSelectedTechStacks(
+                  Array.from(e.target.selectedOptions, (option) =>
+                    parseInt(option.value),
+                  ),
+                )
+              }
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm
                 focus:border-indigo-500 focus:outline-none"
-              placeholder="Tech Stacks"
+              multiple
               required
-            />
+            >
+              {getTechStacks.data?.techstacks.map((techstack) => (
+                <option key={techstack.id} value={techstack.id}>
+                  {techstack.name}
+                </option>
+              ))}
+            </select>
           </label>
 
           <div className="mt-6">

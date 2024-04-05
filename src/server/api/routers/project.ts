@@ -7,19 +7,27 @@ import {
 } from "~/server/api/trpc";
 
 export const projectRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
+  list: publicProcedure.query(async ({ ctx }) => {
+    let projects = await ctx.db.project.findMany({
+      where: {
+        userId: Number(ctx.session?.user.id),
+      },
+      include: {
+        TechStacks: true,
+      },
+    });
+    return {
+      success: true,
+      projects,
+    };
+  }),
+
   create: protectedProcedure
     .input(
       z.object({
         title: z.string().min(1),
         domain: z.string().min(1),
-        techStacks: z.array(z.string()),
+        techStacks: z.array(z.number()),
         description: z.string().min(1),
         gitl: z.string().min(1).url(),
       }),
@@ -59,7 +67,7 @@ export const projectRouter = createTRPCRouter({
             },
           },
           TechStacks: {
-            create: input.techStacks.map((name) => ({ name })),
+            connect: input.techStacks.map((id) => ({ id })),
           },
         },
       });

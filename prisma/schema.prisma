@@ -38,13 +38,13 @@ model Project {
   members     User[]      @relation(name: "ProjectMembers")
   userId      Int
   Request     Request[]
+  
 }
 
 model TechStack {
   id        Int      @id @default(autoincrement())
   name      String
-  Project   Project? @relation(fields: [projectId], references: [id])
-  projectId Int?
+  projects  Project[]
 }
 
 model Request {

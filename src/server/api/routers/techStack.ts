@@ -7,13 +7,15 @@ import {
 } from "~/server/api/trpc";
 
 export const techStackRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
+  list: publicProcedure.query(async ({ ctx }) => {
+    let techStacks = await ctx.db.techStack.findMany({
+      select: { id: true, name: true },
+    });
+    return {
+      success: true,
+      techstacks: techStacks,
+    };
+  }),
 
   create: protectedProcedure
     .input(
