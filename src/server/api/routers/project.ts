@@ -22,6 +22,18 @@ export const projectRouter = createTRPCRouter({
     };
   }),
 
+  Alist: publicProcedure.query(async ({ ctx }) => {
+    let projects = await ctx.db.project.findMany({
+      include: {
+        TechStacks: true,
+      },
+    });
+    return {
+      success: true,
+      projects,
+    };
+  }),
+
   create: protectedProcedure
     .input(
       z.object({

@@ -53,7 +53,7 @@ const dashboard = () => {
                 <td className="px-4 py-2">{project.domain}</td>
                 <td className="px-4 py-2">
                   {project.TechStacks?.map((techStack) => (
-                    <span key={techStack.projectId}>{techStack.name}</span>
+                    <span key={techStack.id}>{techStack.name}</span>
                   ))}
                 </td>
 
