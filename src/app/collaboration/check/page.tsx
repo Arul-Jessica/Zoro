@@ -6,6 +6,19 @@ import { api } from "~/trpc/react";
 
 const CheckForCollaboration = () => {
   const getprojects = api.project.Alist.useQuery();
+
+  const setRequest = api.request.create.useMutation();
+
+  const handleCollaborate = async (projectId: number) => {
+    const request = await setRequest.mutateAsync({
+      Project: projectId,
+    });
+    if (request.success) {
+      console.log("Request sent successfully");
+    } else {
+      console.log("Request failed");
+    }
+  };
   return (
     <div>
       <title>Home to Collaborate</title>
@@ -27,7 +40,12 @@ const CheckForCollaboration = () => {
             ))}
           </td>
           <td>
-            <button>
+            <button
+              onClick={(event) => {
+                event.preventDefault();
+                handleCollaborate(project.id);
+              }}
+            >
               <a href="/CRequestSent">Collaborate</a>
             </button>
           </td>

@@ -74,7 +74,7 @@ const dashboard = () => {
           <Link href="../collaboration/request">Request status</Link>
         </Button>
         <Button>
-          <Link href="../collaboration/sent request">Your Requests</Link>
+          <Link href="../collaboration/sentRequest">Your Requests</Link>
         </Button>
       </div>
     </div>
